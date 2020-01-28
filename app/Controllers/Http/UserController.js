@@ -2,6 +2,7 @@
 
 const User = use("App/Models/User");
 const Hash = use("Hash");
+// const Database = use("Database");
 
 class UserController {
   async createUser({ request, response }) {
@@ -11,6 +12,7 @@ class UserController {
     user.user_name = user_name;
     user.email = email;
     user.password = password;
+    user.user_roles_id = 2;
 
     await user.save();
 
@@ -53,7 +55,6 @@ class UserController {
           .where("user_name", user_name)
           .fetch();
       } else if (email) {
-        console.log("email ==>", email);
         token = await auth
           .authenticator("jwtEmail")
           .withRefreshToken()
@@ -79,9 +80,7 @@ class UserController {
   }
 
   async getProfile({ response, auth }) {
-    console.log(auth);
     const authenticatedUser = await auth.current.user;
-    console.log(authenticatedUser);
 
     if (!authenticatedUser) {
       return response.status(201).send({
@@ -90,8 +89,8 @@ class UserController {
     }
 
     const user = await User.query()
-      .select("id", "email", "user_name")
       .where("id", authenticatedUser.id)
+      .with("userRole")
       .fetch();
 
     return response.status(200).send({

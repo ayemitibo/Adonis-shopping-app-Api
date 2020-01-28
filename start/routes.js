@@ -20,3 +20,8 @@ Route.on("/").render("welcome");
 Route.post("/register", "UserController.createUser");
 Route.post("/login", "UserController.login");
 Route.get("/profile", "UserController.getProfile").middleware(["auth:jwt"]);
+Route.get("/metadata", "MetaDataController.getMetaData").middleware([
+  "auth:jwt"
+]);
+Route.post("/create-product", "ProductController.addProduct");
+Route.get("/all-products", "ProductController.getProducts");
